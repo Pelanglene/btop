@@ -442,6 +442,13 @@ namespace Theme {
 
 	}
 
+	bool has_theme(const string& name) {
+		for (const fs::path p : themes) {
+			if (p == name or p.stem() == name or p.filename() == name) return true;
+		}
+		return false;
+	}
+
 	void setTheme() {
 		const auto& theme = Config::getS("color_theme");
 		fs::path theme_path;

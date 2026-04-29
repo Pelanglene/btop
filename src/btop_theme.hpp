@@ -54,6 +54,10 @@ namespace Theme {
 	//* Set current theme from current "color_theme" value in config
 	void setTheme();
 
+	//* Returns true if a theme matching <name> (full path, stem, or filename) is in the available themes list.
+	//* Must be called after updateThemes().
+	bool has_theme(const string& name);
+
 	extern std::unordered_map<string, string> colors;
 	extern std::unordered_map<string, array<int, 3>> rgbs;
 	extern std::unordered_map<string, array<string, 101>> gradients;

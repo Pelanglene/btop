@@ -1058,8 +1058,18 @@ static auto configure_tty_mode(std::optional<bool> force_tty) {
 		Config::set("shown_boxes", "cpu mem net proc"s);
 	}
 
-	//? Update list of available themes and generate the selected theme
+	//? Update list of available themes
 	Theme::updateThemes();
+
+	//? Apply theme override from --theme CLI flag if provided
+	if (cli.theme.has_value()) {
+		if (not Theme::has_theme(cli.theme.value())) {
+			Logger::warning("Theme '{}' from --theme flag not found, falling back to Default", cli.theme.value());
+		}
+		Config::set("color_theme", cli.theme.value());
+	}
+
+	//? Generate the selected theme
 	Theme::setTheme();
 
 	//? Setup signal handlers for CTRL-C, CTRL-Z, resume and terminal resize
@@ -1143,6 +1153,9 @@ static auto configure_tty_mode(std::optional<bool> force_tty) {
 				Config::unlock();
 				init_config(cli.low_color, cli.filter);
 				Theme::updateThemes();
+				if (cli.theme.has_value()) {
+					Config::set("color_theme", cli.theme.value());
+				}
 				Theme::setTheme();
 				Draw::banner_gen(0, 0, false, true);
 				Global::resized = true;
