@@ -1063,10 +1063,12 @@ static auto configure_tty_mode(std::optional<bool> force_tty) {
 
 	//? Apply theme override from --theme CLI flag if provided
 	if (cli.theme.has_value()) {
-		if (not Theme::has_theme(cli.theme.value())) {
+		if (Theme::has_theme(cli.theme.value())) {
+			Config::set("color_theme", cli.theme.value());
+		} else {
 			Logger::warning("Theme '{}' from --theme flag not found, falling back to Default", cli.theme.value());
+			Config::set("color_theme", "Default"s);
 		}
-		Config::set("color_theme", cli.theme.value());
 	}
 
 	//? Generate the selected theme
@@ -1154,7 +1156,8 @@ static auto configure_tty_mode(std::optional<bool> force_tty) {
 				init_config(cli.low_color, cli.filter);
 				Theme::updateThemes();
 				if (cli.theme.has_value()) {
-					Config::set("color_theme", cli.theme.value());
+					Config::set("color_theme",
+						Theme::has_theme(cli.theme.value()) ? cli.theme.value() : "Default"s);
 				}
 				Theme::setTheme();
 				Draw::banner_gen(0, 0, false, true);
